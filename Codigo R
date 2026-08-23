@@ -60,36 +60,3 @@ tabla <- data.frame(
 )
 
 print(tabla)
-
-
-#### Histograma ####
-
-hist(x,
-     breaks = "Sturges",
-     probability = TRUE,
-     col = "lightblue",
-     border = "black",
-     main = paste("Histograma de", VARIABLE),
-     xlab = VARIABLE,
-     ylab = "Densidad")
-
-# Curva de densidad
-lines(density(x),
-      lwd = 2)
-
-# Curva normal de referencia
-curve(dnorm(x,
-            mean = mean(x),
-            sd = sd(x)),
-      add = TRUE,
-      lwd = 2,
-      lty = 2)
-
-# Información de curtosis
-legend("topright",
-       legend = c(
-         paste("Curtosis =", round(curtosis_pearson, 3)),
-         paste("Exceso =", round(curtosis_exceso, 3)),
-         paste("Tipo:", tipo)
-       ),
-       bty = "n")
