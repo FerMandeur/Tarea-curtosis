@@ -1,0 +1,95 @@
+#### Base de datos ####
+
+# Lectura de base de datos csv
+# Tipo de archivo: csv delimitado por coma
+
+datos <- read.csv(file.choose(), header = TRUE)
+
+# Muestra el nombre de las variables de la base de datos
+names(datos)
+
+
+#### Selección de variable ####
+
+# Escribe el nombre de la variable que quieres analizar
+VARIABLE <- "bill_length_mm"
+
+# Extraer la variable
+x <- datos[[VARIABLE]]
+
+# Eliminar valores faltantes
+x <- na.omit(x)
+
+
+#### Cálculo de curtosis ####
+
+# Instalar e1071 si es necesario
+# install.packages("e1071")
+
+library(e1071)
+
+# Exceso de curtosis
+curtosis_exceso <- kurtosis(x)
+
+# Curtosis de Pearson
+curtosis_pearson <- curtosis_exceso + 3
+
+
+#### Clasificación ####
+
+if (curtosis_exceso > 0) {
+  tipo <- "Leptocúrtica"
+} else if (curtosis_exceso < 0) {
+  tipo <- "Platicúrtica"
+} else {
+  tipo <- "Mesocúrtica"
+}
+
+
+#### Tabla de resultados ####
+
+tabla <- data.frame(
+  Variable = VARIABLE,
+  N = length(x),
+  Media = mean(x),
+  Mediana = median(x),
+  Desviacion_Estandar = sd(x),
+  Curtosis_Exceso = curtosis_exceso,
+  Curtosis_Pearson = curtosis_pearson,
+  Tipo = tipo
+)
+
+print(tabla)
+
+
+#### Histograma ####
+
+hist(x,
+     breaks = "Sturges",
+     probability = TRUE,
+     col = "lightblue",
+     border = "black",
+     main = paste("Histograma de", VARIABLE),
+     xlab = VARIABLE,
+     ylab = "Densidad")
+
+# Curva de densidad
+lines(density(x),
+      lwd = 2)
+
+# Curva normal de referencia
+curve(dnorm(x,
+            mean = mean(x),
+            sd = sd(x)),
+      add = TRUE,
+      lwd = 2,
+      lty = 2)
+
+# Información de curtosis
+legend("topright",
+       legend = c(
+         paste("Curtosis =", round(curtosis_pearson, 3)),
+         paste("Exceso =", round(curtosis_exceso, 3)),
+         paste("Tipo:", tipo)
+       ),
+       bty = "n")
